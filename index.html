@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<head>
+    <title>CS 180 Project 2 ~ Kiran Suresh</title>
+</head>
+<style>
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  figure {
+    display: table;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .blend-figure {
+    display: table;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    margin-top: 2px
+  }
+  
+  img {
+    max-height: 250px;
+    max-width: 220px;
+    display: block;
+    border: 2px solid black
+  }
+
+  .blend-img {
+    max-height: 150px;
+    max-width: 150px;
+    display: block;
+    border: 2px solid black
+  }
+
+  
+  .blend-img-big {
+    max-height: 250px;
+    max-width: 250px;
+    display: block;
+    border: 2px solid black
+  }
+
+  .formula-img {
+    max-width: 500px;
+    max-height: 120px;
+    display: block;
+    margin-bottom: 10px
+  }
+
+  .diagram-img {
+    max-width: 1000px;
+    display: block;
+    margin-bottom: 10px
+  }
+  
+  figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    font-size: 15px;
+    text-align: center;
+    color: #606060
+  }
+
+  body {
+    padding-left: 15%;
+    padding-right: 15%
+  }
+
+  p {
+    color: #606060
+  }
+
+  h1 {
+    padding-bottom: 20px;
+  }
+
+  h2 {
+    padding-top: 30px;
+  }
+
+  h3 {
+    padding-top: 20px;
+  }
+
+
+</style>
+
+<body style="font-family: Verdana">
+    <center>
+        <h1>CS 180 Project 2 ~ Kiran Suresh</h1>
+    </center>
+
+    <h2>Introduction</h2>
+
+    <p>
+        In this project we're going to be playing with image frequencies in a lot of different contexts! Image frequencies can generally be categorized into being high or low. High frequencies are the fine details in an image, like edges, that facilitate abrupt pixel changes. In contrast, low frequencies are the broad changes in an image that don't have many fine details. In fiddling with these different types of image frequencies, we can create some really cool results!
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/oraple/oraple_4.jpg">
+                <figcaption class="figcaption">An Oraple!</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/eshaan.jpg">
+                <figcaption class="figcaption">Is he happy or sad?!</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dx_gaussian.png">
+                <figcaption class="figcaption">Some edges!</figcaption>
+         </figure>
+    </div>
+
+    <center>
+        <h2>Part 1 | Fun with Filters! </h2>
+    </center>
+
+    <h3> Finite Difference Operator </h3>
+
+    <p>
+        Let's start by using the finite difference operators (shown below) to find some edges in the x and y directions of an image. We do this by convolving the image with these finite difference operators. We'll then pick a threshold for the frequencies (zeroing out the pixels under that threshold) so that we can get a visualization of the edges!
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/finite_difference_operators.jpg" class="formula-img">
+                <figcaption class="figcaption">Finite Difference Operators in the x and y directions!
+                    <a href="https://inst.eecs.berkeley.edu/~cs180/fa23/Lectures/ConvolutionAndDerivatives.pdf">Source</a>
+                </figcaption>
+         </figure>
+    </div>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman.png">
+                <figcaption class="figcaption">Original image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dx.png">
+                <figcaption class="figcaption">Filter in the x direction</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dy.png">
+                <figcaption class="figcaption">Filter in the y direction</figcaption>
+         </figure>
+    </div>
+
+    <p>
+        Now we want to compute the gradient magnitude by combining the finite differences in the x and y directions. This can be done through the computation shown below. Then, we want to zero out pixel values under a certain threshold (through guess and check) so that we can remove noise.
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/gradient_magnitude_formula.jpg" class="formula-img">
+                <figcaption class="figcaption">Formula for computing gradient magnitude!
+                    <a href="https://inst.eecs.berkeley.edu/~cs180/fa23/Lectures/ConvolutionAndDerivatives.pdf">Source</a>
+                </figcaption>
+         </figure>
+    </div>
+
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman.png">
+                <figcaption class="figcaption">Original image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_gm.png">
+                <figcaption class="figcaption">Gradient Magnitudes</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_gm_thresholded.png">
+                <figcaption class="figcaption">Threshold=0.3</figcaption>
+         </figure>
+    </div>
+
+    <h3> Derivative of Gaussian (DoG) Filter </h3>
+
+    <p>
+        Our results from the finite difference operators were alright, but there was a lot of noise making our 
+        results worse! To fix this, let's convolve the image with a gaussian first to get rid of some noise before 
+        we use our operators. Notice how the edges are way more well defined and crisp now! Another difference is that 
+        the noise is way less pronounced so the optimal threshold value drops a lot (from 0.3 to 0.08).
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman.png">
+                <figcaption class="figcaption">Original Image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_blurred.png">
+                <figcaption class="figcaption">Blurred with Gaussian</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dx_gaussian.png">
+                <figcaption class="figcaption">Filter in x direction</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dy_gaussian.png">
+                <figcaption class="figcaption">Filter in y direction</figcaption>
+         </figure>
+    </div>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman_gm_gaussian.png">
+                <figcaption class="figcaption">Gradient Magnitudes</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_gm_gaussian_thresholded.png">
+                <figcaption class="figcaption">Threshold=0.08</figcaption>
+         </figure>
+    </div>
+
+    <p>
+        Right now, we are doing two convolution operations (first to blur, then to use the finite difference operators).
+        In fact, we can simplify this operation by convolving our finite difference operators with a gaussian 
+        first so that we only have to convolve the image with a single filter ~ the DoG Filter (shown below)! 
+        This is a great way to speed up the image processing, especially when we have large images. 
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/gaussian_original.jpg">
+                <figcaption class="figcaption">Gaussian Filter</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/DoG_x.jpg">
+                <figcaption class="figcaption">Filter in x direction</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/DoG_y.jpg">
+                <figcaption class="figcaption">Filter in y direction</figcaption>
+         </figure>
+    </div>
+
+    <p>Now, let's use these DoG filters to get our image's edges in a single convolution.
+        Notice that the edge results are the same as above!
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman.png">
+                <figcaption class="figcaption">Original Image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dx_dog.png">
+                <figcaption class="figcaption">Single filter in x direction</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_dy_dog.png">
+                <figcaption class="figcaption">Single filter in y direction</figcaption>
+         </figure>
+    </div>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/cameraman_gm_dog.png">
+                <figcaption class="figcaption">Gradient Magnitudes</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/cameraman_gm_thresholded_dog.png">
+                <figcaption class="figcaption">Threshold=0.08</figcaption>
+         </figure>
+    </div>
+
+    <center>
+        <h2>Part 2 | Fun with Frequencies! </h2>
+    </center>
+
+    <h3> Image "Sharpening" </h3>
+
+    <p>
+        Now, we are going to do some image sharpening! To do this, we will be extracting the low frequencies of all the channels
+        in an image with a gaussian filter, subtracting that from the original image to get the high frequencies, then adding
+        those high frequencies back to the image (weighted by some value alpha) so that we can have those edges 
+        and intricate details be sharper! Best of all, we can combine all of these operations into a filter 
+        known as the Unsharp Masking Filter, which is shown below.
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/unsharp_mask_filter_formula.jpg" class="formula-img">
+                <figcaption class="figcaption">The Unsharp Mask Filter!
+                    <a href="https://inst.eecs.berkeley.edu/~cs180/fa23/Lectures/FreqDomain.pdf">Source</a>
+                </figcaption>
+         </figure>
+    </div>
+
+    <p>
+        Here is the unsharp mask filter applied to some images! I show the progression of getting the low and high
+        frequencies for clarity, but it should be noted that the unsharp mask filter does all of the sharpening in a
+        single convolution!
+    </p>
+
+    <center>
+        <h4>Taj Mahal</h4>
+    </center>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/taj.jpg">
+                <figcaption class="figcaption">Original Image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/taj_low.jpg">
+                <figcaption class="figcaption">Low Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/taj_high.jpg">
+                <figcaption class="figcaption">High Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/taj_sharpened.jpg">
+                <figcaption class="figcaption">Sharpened! Alpha=2</figcaption>
+         </figure>
+    </div>
+
+    <center>
+        <h4>Moon Landing</h4>
+    </center>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/moon.jpg">
+                <figcaption class="figcaption">Original Image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/moon_low.jpg">
+                <figcaption class="figcaption">Low Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/moon_high.jpg">
+                <figcaption class="figcaption">High Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/moon_sharpened.jpg">
+                <figcaption class="figcaption">Sharpened! Alpha=10</figcaption>
+         </figure>
+    </div>
+
+    <center>
+        <h4>Claymation</h4>
+    </center>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/clay.jpg">
+                <figcaption class="figcaption">Original Image</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/clay_low.jpg">
+                <figcaption class="figcaption">Low Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/clay_high.jpg">
+                <figcaption class="figcaption">High Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/clay_sharpened.jpg">
+                <figcaption class="figcaption">Sharpened! Alpha=3</figcaption>
+         </figure>
+    </div>
+
+    <h3> Hybrid Images </h3>
+
+    <p>
+        Now we are going to try creating hybrid images by layering the high frequencies of one image on top of 
+        the low frequencies of another. Because you can see high frequencies better from close and low frequencies
+        better from far away, the image will appear to be different depending on how far you are from it. We'll use
+        the same techniques as earlier to isolate the low and high frequencies (gaussian filter). The kernel size and sigma
+        values for the gaussian filter determine the cutoff frequencies in the images, so those were calibrated through
+        manual testing. Also, the images were aligned using two reference points in each one.
+    </p>
+
+    <center>
+        <h4>One Piece</h4>
+    </center>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/zoro.jpg">
+                <figcaption class="figcaption">Original Zoro</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/zoro_low.jpg">
+                <figcaption class="figcaption">Low Frequency Zoro</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/luffy.jpg">
+                <figcaption class="figcaption">Original Luffy</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/luffy_high.jpg">
+                <figcaption class="figcaption">High Frequency Luffy</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/onepiece.jpg">
+                <figcaption class="figcaption">Hybrid</figcaption>
+         </figure>
+    </div>
+
+    <center>
+        <h4>Eshaan</h4>
+    </center>
+
+    <p>
+        Is Eshaan smiling or not?? For best results, look at his nose! Since this is my favorite image, I included 
+        the frequencies of each image using the fourier transform!
+    </p>
+
+    <div class="container">
+         <figure class="image">
+            <img src="images/eshaan_ded.jpg">
+                <figcaption class="figcaption">Original Sad</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/ded_low.jpg">
+                <figcaption class="figcaption">Low Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/eshaan_happy.jpg">
+                <figcaption class="figcaption">Original Smiling</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/happy_high.jpg">
+                <figcaption class="figcaption">High Frequencies</figcaption>
+         </figure>
+         <figure class="image">
+            <img src="images/eshaan.jpg">
+                <figcaption class="figcaption">Hybrid</figcaption>
+         </figure>
+    </div>
+
+    <div class="container">
+        <figure class="image">
+           <img src="images/ded_fourier.jpg">
+               <figcaption class="figcaption">Original Sad Fourier</figcaption>
+        </figure>
+        <figure class="image">
+           <img src="images/ded_low_fourier.jpg">
+               <figcaption class="figcaption">Low Frequencies Fourier</figcaption>
+        </figure>
+        <figure class="image">
+           <img src="images/happy_fourier.jpg">
+               <figcaption class="figcaption">Original Smiling Fourier</figcaption>
+        </figure>
+        <figure class="image">
+           <img src="images/happy_high_fourier.jpg">
+               <figcaption class="figcaption">High Frequencies Fourier</figcaption>
+        </figure>
+        <figure class="image">
+           <img src="images/eshaan_fourier.jpg">
+               <figcaption class="figcaption">Hybrid Fourier</figcaption>
+        </figure>
+   </div>
+
+    <h3> Multi-resolution Blending and the Oraple journey </h3>
+
+    <p>
+        Now we are going to be blending images together using Gaussian and Laplacian stacks! A gaussian stack is a stack
+        of the same image where each level is another convolution with a gaussian filter. By contrast, a laplacian stack
+        is an image where at each level you subtract the corresponding level of the gaussian stack to extract just the high
+        features. This is pictured below. 
+    </p>
+
+    <div class="container">
+        <figure class="image">
+            <img src="images/gauss_laplace_stack_diagram.jpg" class="diagram-img">
+                <figcaption class="figcaption"><a href="https://inst.eecs.berkeley.edu/~cs180/fa23/Lectures/PyramidsBlending.pdf">Source</a></figcaption>
+         </figure>
+    </div>
+
+    <p>
+        So, using these stacks we will blend together some images! We'll be starting with images that can be blended together
+        by a simple vertical or horizontal seam. The steps are: constructing a Laplacian stack for both sides of an image, constructing
+        a Gaussian stack for the masks between the images, multiplying the masks at each level of the Gaussian mask stack by the image
+        frequencies at each level of the Laplacian stack, then collapsing the Laplacian stack for our final image. Along the way, we can 
+        tune our low and high cutoff frequencies based on the size of the gaussian kernels used and their sigma values. This is a lot,
+        so let's see that visualized!
+    </p>
+
+    <p>
+        From left to right, we have the following at each level: The left mask, the left frequencies * the left mask, 
+        the joined image, the right frequencies * the right mask, the right mask. The top level shows the highest frequencies
+        while the bottom level shows the lowest frequencies. The penultimate is the bottom level of the gaussian stacks
+        used to create the laplacian stacks (as those are needed to collapse the stacks for the final image). Finally, the bottom row
+        is the finished image!
+    </p>
+
+    <center>
+        <h4>Oraple!</h4>
+    </center>
+
+    <div id="orapleWrapper">
+        
+    </div>
+
+
+    <center>
+        <h4>Young and Old</h4>
+    </center>
+
+    <p style="text-align: center">
+        This is my favorite! The blending works really well (especially around the noses) and you can almost tell
+        that they're the same person!
+    </p>
+
+    <div id="timeWrapper">
+            
+    </div>
+
+    <script>
+
+        const groups = ["oraple", "time"]
+
+        for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+            let currGroup = groups[groupIndex];
+
+            for (let i = 0; i < 4; i++) {
+                const container = document.createElement("div");
+                container.className = "container";
+
+                for (let j = 0; j < 5; j++) {
+                    if (i == 4 && (j == 0 || j == 4)) {
+                        continue;
+                    }
+                    const figure = document.createElement("figure");
+                    figure.className = "blend-figure";
+
+                    const img = document.createElement("img");
+                    img.className = "blend-img";
+                    if (j == 0) {
+                        img.src = `images/${currGroup}/${currGroup}_left_mask_${i}.jpg`;
+                    } else if (j == 1) {
+                        img.src = `images/${currGroup}/${currGroup}_left_${i}.jpg`;
+                    } else if (j == 2) {
+                        img.src = `images/${currGroup}/${currGroup}_${i}.jpg`;
+                    } else if (j == 3) {
+                        img.src = `images/${currGroup}/${currGroup}_right_${i}.jpg`;
+                    } else {
+                        img.src = `images/${currGroup}/${currGroup}_right_mask_${i}.jpg`;
+                    }
+
+                    const figcaption = document.createElement("figcaption");
+                    figcaption.className = "figcaption";
+
+                    figure.appendChild(img);
+                    figure.appendChild(figcaption);
+                    container.appendChild(figure);
+                }
+                
+                document.getElementById(`${currGroup}Wrapper`).appendChild(container);
+            }
+
+            const container = document.createElement("div");
+            container.className = "container";
+            let i = 4;
+
+            for (let j = 0; j < 3; j++) {
+                const figure = document.createElement("figure");
+                figure.className = "blend-figure";
+
+                const img = document.createElement("img");
+                img.className = "blend-img-big";
+                if (j == 0) {
+                    img.src = `images/${currGroup}/${currGroup}_left_${i}.jpg`;
+                } else if (j == 1) {
+                    img.src = `images/${currGroup}/${currGroup}_${i}.jpg`;
+                } else if (j == 2) {
+                    img.src = `images/${currGroup}/${currGroup}_right_${i}.jpg`;
+                }
+
+                const figcaption = document.createElement("figcaption");
+                figcaption.className = "figcaption";
+
+                figure.appendChild(img);
+                figure.appendChild(figcaption);
+                container.appendChild(figure);
+            }
+            
+            document.getElementById(`${currGroup}Wrapper`).appendChild(container);
+        }
+    </script>
+
+<h2>Conclusion</h2>
+
+<p style="margin-bottom: 100px">This project was a ton of fun! You can 
+    do a lot of complicated image processing with simple convolutions and frequency manipulation.</p>
+
+</body>
